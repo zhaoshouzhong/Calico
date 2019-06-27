@@ -3,3 +3,17 @@ The Orchestrator plugin：编排插件，和具体的编排服务相关。
 etcd：calico数据存储在etcd中
 BIRD：BGP client 用来分发route信息。一般和Felix部署在一起
 BGP Route Reflector (BIRD)：RR 用在大规模的网络模式下。
+
+# kubectl exec -it calico-node-f44t7 -n kube-system /bin/sh
+Defaulting container name to calico-node.
+Use 'kubectl describe pod/calico-node-f44t7 -n kube-system' to see all of the containers in this pod.
+/ # vi /sbin/start_runit 
+/ # ls -l /etc/service/enabled
+total 0
+drwxr-xr-x    3 root     root            34 Jun 26 07:57 bird
+drwxr-xr-x    3 root     root            34 Jun 26 07:57 bird6
+drwxr-xr-x    3 root     root            34 Jun 26 07:57 confd
+drwxr-xr-x    3 root     root            34 Jun 26 07:57 felix
+
+查看calico node信息，它的启动脚本为/sbin/start_runit
+系统服务由4个可用服务：bird，bird6，confd，felix
