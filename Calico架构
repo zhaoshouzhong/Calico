@@ -58,4 +58,3 @@ confd：is a simple configuration management tool. It reads values from etcd and
 ==3：数据路径
 
 calico通过BGP协议交换路由信息，路由信息拿到后，再把相关信息写入os kernel的路由表和iptables，没有额外的动作。因此，calico的效率高很显然了。
-![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/datapath.JPG)
