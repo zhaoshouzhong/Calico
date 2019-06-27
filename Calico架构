@@ -1,0 +1,5 @@
+Felix：calico agent，运行在每台主机上。
+The Orchestrator plugin：编排插件，和具体的编排服务相关。
+etcd：calico数据存储在etcd中
+BIRD：BGP client 用来分发route信息。一般和Felix部署在一起
+BGP Route Reflector (BIRD)：RR 用在大规模的网络模式下。
