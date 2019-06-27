@@ -1,6 +1,5 @@
 ==1：架构
-
-Felix：calico agent，运行在每台主机上。它的主要功能包括：
+Felix：calico agent，运行在每台主机上。它的主要功能包括:
 （1）接口管理：把接口相关的信息编程到内核中，方便内核处理endpoint发送的消息。
 （2）路由编程：把路由信息写入到FIB（Forwarding Information Base）表中
 （3）ACL编程：ACL权限写入到kernel中
