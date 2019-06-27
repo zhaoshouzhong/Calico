@@ -1,4 +1,5 @@
 ==1：架构
+
 Felix：calico agent，运行在每台主机上。它的主要功能包括：
 （1）接口管理：把接口相关的信息编程到内核中，方便内核处理endpoint发送的消息。
 （2）路由编程：把路由信息写入到FIB（Forwarding Information Base）表中
@@ -56,5 +57,6 @@ PID   USER     TIME   COMMAND
 confd：is a simple configuration management tool. It reads values from etcd and writes them to files on disk。
 
 ==3：数据路径
+
 calico通过BGP协议交换路由信息，路由信息拿到后，再把相关信息写入os kernel的路由表和iptables，没有额外的动作。因此，calico的效率高很显然了。
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/datapath.JPG)
