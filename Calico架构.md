@@ -12,6 +12,7 @@
 - Confd: 从etcd中读取数据，生成bird配置文件。
 - BGP Route Reflector (BIRD)：小规模网络下，BGP client是相互连接，组成一个网状网络。这种方式不适合于大规模的组网场景。而RR则用在大规模的网络模式下，这样BGP client直接和RR进行互联，极大减少网络连接的数量。RR接受到BGP client端路由新后，
 会自动把路由信息广播到数据中心其他路由节点。
+- calicoctl: calcio的命令行工具，用来配置和查询calico信息。可以部署在一台或者多台主机上。
 
 # calico部署
 calico的部署，参考官方文档，支持k8s,openshift,openstack,物理机方式部署。我们选择k8s的部署方式
@@ -19,6 +20,7 @@ calico的部署，参考官方文档，支持k8s,openshift,openstack,物理机�
 
 部署方式，采用etcd外置方式
 [etcd部署方式](https://docs.projectcalico.org/v3.7/getting-started/kubernetes/installation/calico#installing-with-the-etcd-datastore)
+
 基于etcd方式部署，有如下节点需要注意：
 - 1：注意更改POD_CIDR范围，需要和k8s的POD范围保持一致
 - 2：注意etcd信息的配置，把etcd的配置信息替换为实际的证书信息
@@ -86,6 +88,10 @@ PID   USER     TIME   COMMAND
  
 系统服务由4个可用服务：bird，bird6，confd，felix
 
+进入/etc/calico/confd/config，可以看到对应bird的配置文件
+/etc/calico/confd/config # ls
+bird.cfg        bird6.cfg       bird6_aggr.cfg  bird6_ipam.cfg  bird_aggr.cfg   bird_ipam.cfg
+
 cni部分：根据calico.yaml安装文件，在每个物理机的/etc/cni/net.d目录下，可以看到cni的配置信息
 [root@k8s01 net.d]# pwd
 /etc/cni/net.d
@@ -108,7 +114,7 @@ total 66648
 
 ```
 
-==3：数据路径
+= 数据路径
 
 calico通过BGP协议交换路由信息，路由信息拿到后，再把相关信息写入os kernel的路由表和iptables，没有额外的动作。因此，calico的效率高很显然了。
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/datapath.JPG)
