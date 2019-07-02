@@ -1,5 +1,5 @@
 ## 1：架构
-![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/calico.jgp)
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/calico.jpg)
 
 - Felix：calico agent，运行在每台主机上。它的主要功能包括:
 （1）接口管理：把接口相关的信息编程到内核中，方便内核处理endpoint发送的消息。
