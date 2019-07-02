@@ -36,6 +36,7 @@ ETCD_ENDPOINTS=https://xxx:2379,https://xxxx:2379
 ETCD_KEY_FILE=/calico-secrets/etcd-key
 
 查看一下系统运行的进程：
+```javascript
 ps
 PID   USER     TIME   COMMAND
     1 root       0:02 /sbin/runsvdir -P /etc/service/enabled
