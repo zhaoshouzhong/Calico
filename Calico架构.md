@@ -13,31 +13,33 @@
 
 ## 2：实例
 
-我们找一个pod查看一下calico node的内部信息：
-kubectl exec -it calico-node-f44t7 -n kube-system /bin/sh
+我们找一个pod查看一下calico node的内部信息
+```javascript
+# kubectl exec -it calico-node-f44t7 -n kube-system /bin/sh
 Defaulting container name to calico-node.
 Use 'kubectl describe pod/calico-node-f44t7 -n kube-system' to see all of the containers in this pod.
+```
 
 查看calico node信息，它的启动脚本为/sbin/start_runit
-vi /sbin/start_runit 
+```javascript
+/ # vi /sbin/start_runit 
 环境变量信息放到：
 env > /etc/envvars
 
-cat /etc/envvars 
+/ # cat /etc/envvars 
 FELIX_IPV6SUPPORT=false
 KUBERNETES_SERVICE_PORT=443
 KUBERNETES_PORT=tcp://10.254.0.1:443
 
 可以看到etcd的相关配置信息：
-cat /etc/envvars |grep ETCD
+/ # cat /etc/envvars |grep ETCD
 ETCD_CA_CERT_FILE=/calico-secrets/etcd-ca
 ETCD_CERT_FILE=/calico-secrets/etcd-cert
 ETCD_ENDPOINTS=https://xxx:2379,https://xxxx:2379
 ETCD_KEY_FILE=/calico-secrets/etcd-key
 
 查看一下系统运行的进程：
-```javascript
-ps
+/ # ps
 PID   USER     TIME   COMMAND
     1 root       0:02 /sbin/runsvdir -P /etc/service/enabled
    73 root       0:00 runsv felix
@@ -51,11 +53,12 @@ PID   USER     TIME   COMMAND
  9316 root       0:00 /bin/sh
  9611 root       0:00 /bin/sh
  9616 root       0:00 ps
-
-系统服务由4个可用服务：bird，bird6，confd，felix
+ 
+ 系统服务由4个可用服务：bird，bird6，confd，felix
 其中：
 confd：is a simple configuration management tool. It reads values from etcd and writes them to files on disk。
+```
 
-3：数据路径
+==3：数据路径
 
 calico通过BGP协议交换路由信息，路由信息拿到后，再把相关信息写入os kernel的路由表和iptables，没有额外的动作。因此，calico的效率高很显然了。
