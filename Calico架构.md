@@ -16,9 +16,9 @@
 # calico部署
 calico的部署，参考官方文档，支持k8s,openshift,openstack,物理机方式部署。我们选择k8s的部署方式
 部署要求，参考：
-<https://docs.projectcalico.org/v3.7/getting-started/kubernetes/requirements>
+[calico部署要求](https://docs.projectcalico.org/v3.7/getting-started/kubernetes/requirements)
 部署方式，采用etcd外置方式
-<https://docs.projectcalico.org/v3.7/getting-started/kubernetes/installation/calico#installing-with-the-etcd-datastore>
+[etcd部署方式](https://docs.projectcalico.org/v3.7/getting-started/kubernetes/installation/calico#installing-with-the-etcd-datastore)
 基于etcd方式部署，有如下节点需要注意：
 - 1：注意更改POD_CIDR范围，需要和k8s的POD范围保持一致
 - 2：注意etcd信息的配置，把etcd的配置信息替换为实际的证书信息
