@@ -32,10 +32,11 @@ https://docs.projectcalico.org/v3.7/networking/design/l3-interconnect-fabric
 这个是calico官方推荐的组网方案，
 ### 二层Peer
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-rack-l2-spine.png)
+
 该模式介绍：
-- 每个机架一个RR
-- 机架上的所有主机和机架RR构成Peer集群
-- 机架RR和其他机架RR构成Peer集群
+- 1：每个机架一个RR
+- 2：机架上的所有主机和机架RR构成Peer集群
+- 3：机架RR和其他机架RR构成Peer集群
 
 优点：
 - 1: 网络模型比较清晰和明了，网络路径短。
@@ -65,6 +66,7 @@ calico官方不推荐的方案，缺点比较明显：
 虽然不推荐，还是要介绍一下：
 ### 二层Peer
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-server-l2-spine.png)
+
 模式介绍：
 - 1：每台主机是一个独立的AS域
 - 2：每个机架一个独立的AS域
@@ -73,6 +75,7 @@ calico官方不推荐的方案，缺点比较明显：
 
 ### 三层Peer
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-server-l3-spine.png)
+
 模型介绍：
 相对于前面的模式，它的不同在于：
 机架AS域和核心交换机的AS域组成BGP Peer集群
