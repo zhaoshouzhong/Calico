@@ -7,7 +7,7 @@ calico 针对不同的应用场景，有不同的网络模型，需要分为两�
 # 二层网络模型：
 https://docs.projectcalico.org/v3.7/networking/design/l2-interconnect-fabric
 
-![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l2-rr-spine-planes.jpg)
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l2-rr-spine-planes .jpg)
 
 该模式介绍：
 - 1： blue 、green 、 orange、red 代表4个网络平面，可以用4个不同vlan进行区分
