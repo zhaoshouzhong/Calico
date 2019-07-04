@@ -7,6 +7,8 @@ calico 针对不同的应用场景，有不同的网络模型，需要分为两�
 # 二层网络模型：
 https://docs.projectcalico.org/v3.7/networking/design/l2-interconnect-fabric
 
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l2-rr-spine-planes.jpg)
+
 该模式介绍：
 - 1： blue 、green 、 orange、red 代表4个网络平面，可以用4个不同vlan进行区分
 - 2： 每个平面有独立的RR，RR之间不需要组成对等集群
@@ -24,8 +26,18 @@ https://docs.projectcalico.org/v3.7/networking/design/l2-interconnect-fabric
 # 三层网络模型
 三层网络模型，有多种方案可供选择
 ## The AS Per Rack model（每个机架一个自治域）
-### 机架AS域彼此Peer
+### 二层Peer
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-rack-l2-spine.png)
 
-### 机架AS域和核心交换机彼此Peer
+### 三层Peer
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-rack-l3-spine.png)
 
+## The AS per Compute Server model(每台主机一个AS自治域)
+### 二层Peer
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-server-l2-spine.png)
 
+### 三次Peer
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-server-l3-spine.png)
+
+## The Downward Default model
+![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-downward-default.png)
