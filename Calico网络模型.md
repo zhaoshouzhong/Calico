@@ -46,6 +46,7 @@ https://docs.projectcalico.org/v3.7/networking/design/l3-interconnect-fabric
 
 ### 三层Peer
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-rack-l3-spine.png)
+
 模式介绍：
 - 1：每个机架一个RR
 - 2：机架上的所有主机和机架RR构成Peer集群
