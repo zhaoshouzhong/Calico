@@ -35,7 +35,7 @@ https://docs.projectcalico.org/v3.7/networking/design/l3-interconnect-fabric
 该模式介绍：
 - 每个机架一个RR
 - 机架上的所有主机和机架RR构成Peer集群
-- 机架RR和其他机架RR构成Peer集群，这样机架TOR直接拥有其他机架的路由信息。
+- 机架RR和其他机架RR构成Peer集群
 
 优点：
 - 1: 网络模型比较清晰和明了，网络路径短。
