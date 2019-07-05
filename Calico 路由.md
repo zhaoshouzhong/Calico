@@ -29,8 +29,14 @@ Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 111.xx.73.69    0.0.0.0         255.255.255.255 UH    0      0        0 cali8eb4bab48a8
 111.xx.236.128  k8s02           255.255.255.192 UG    0      0        0 enp0s8
+
+# ip route
+111.xx.236.128/26 via 192.168.56.102 dev enp0s8 proto bird
 ```
-则Use Iface部分变为主机的物理网卡名称
+则Use Iface部分变为主机的物理网卡名称。
+
+192.168.56.102 为k8s02的主机ip
+这样就很清晰了，通过k8s02（192.168.56.102），可以访问到111.xx.236.128/26的地址段。那么111.xx.236.128/26这个段是怎么分配的？
 
 # calico IP分配规则
 从上面可以看出，针对不同的物理机，calico分别不同的ip路由规则。这些物理机和ip网段的对应规则怎么可以查到呢？答案在etcd中。
@@ -58,6 +64,8 @@ k8s02 为111.xx.236.128/26
 - calico分配规则是一次分配一个64个ip的网段，如果不够，calico会持续分配。这样一个物理机就可以查到多个网络的分配情况。
 
 备注：如果有异常操作，会导致etcd的allocations的字段记录的信息可能不准，但是unallocated记录的是准的。
+
+ip段定义好后，对应主机上的容器在创建时，会自动的从该ip pool中分配ip。
 
 # 容器路由
 进入一个容器内部，比如
