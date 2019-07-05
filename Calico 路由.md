@@ -27,36 +27,36 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 # route
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-111.xx.73.69    0.0.0.0         255.255.255.255 UH    0      0        0 cali8eb4bab48a8
-111.xx.236.128  k8s02           255.255.255.192 UG    0      0        0 enp0s8
+172.xx.73.69    0.0.0.0         255.255.255.255 UH    0      0        0 cali8eb4bab48a8
+172.xx.236.128  k8s02           255.255.255.192 UG    0      0        0 enp0s8
 
 # ip route
-111.xx.236.128/26 via 192.168.56.102 dev enp0s8 proto bird
+172.xx.236.128/26 via 192.168.56.102 dev enp0s8 proto bird
 ```
 则Use Iface部分变为主机的物理网卡名称。
 
 192.168.56.102 为k8s02的主机ip
-这样就很清晰了，通过k8s02（192.168.56.102），可以访问到111.xx.236.128/26的地址段。那么111.xx.236.128/26这个段是怎么分配的？
+这样就很清晰了，通过k8s02（192.168.56.102），可以访问到172.xx.236.128/26的地址段。那么172.xx.236.128/26这个段是怎么分配的？
 
 # calico IP分配规则
 从上面可以看出，针对不同的物理机，calico分别不同的ip路由规则。这些物理机和ip网段的对应规则怎么可以查到呢？答案在etcd中。
 查询etcd
 ```
 etcdctl get /  --prefix --keys-only |grep calico
-/calico/ipam/v2/assignment/ipv4/block/111.xx.236.128-26
-/calico/ipam/v2/assignment/ipv4/block/111.xx.73.64-26
+/calico/ipam/v2/assignment/ipv4/block/172.xx.236.128-26
+/calico/ipam/v2/assignment/ipv4/block/172.xx.73.64-26
 
-/calico/ipam/v2/host/k8s01/ipv4/block/111.xx.73.64-26
-/calico/ipam/v2/host/k8s02/ipv4/block/111.xx.236.128-26
+/calico/ipam/v2/host/k8s01/ipv4/block/172.xx.73.64-26
+/calico/ipam/v2/host/k8s02/ipv4/block/172.xx.236.128-26
 ```
-可以看出对应主机K8s01，分配的网段为111.xx.73.64/26
-k8s02 为111.xx.236.128/26
+可以看出对应主机K8s01，分配的网段为172.xx.73.64/26
+k8s02 为172.xx.236.128/26
 这个网段和前面的主机route表也是匹配的
 
 在看一下assignment的信息
 ```
- calico get /calico/ipam/v2/assignment/ipv4/block/111.xx.236.128-26
-/calico/ipam/v2/assignment/ipv4/block/111.10.236.128-26
+ calico get /calico/ipam/v2/assignment/ipv4/block/172.xx.236.128-26
+/calico/ipam/v2/assignment/ipv4/block/172.10.236.128-26
 {"cidr":"111.xx.236.128/26","affinity":"host:k8s02","strictAffinity":false,"allocations":[null,null,null,null,null,null,null,null,0,1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"unallocated":[10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,1,0,2,3,4,5,6,7],"attributes":[{"handle_id":"k8s-pod-network.e908404f358d0e88231393cf2e19b0328f05ccc162743e18a87e0192beef0e0d","secondary":null},{"handle_id":"k8s-pod-network.c4367bf4e8732d6dc33ed192f9ee9ce07f9e6731a98e1fca58cd2d1c1b887c5c","secondary":null}]}
 ```
 - allocations:表示已经分配的
@@ -83,7 +83,7 @@ default via 169.254.1.1 dev eth0
     link/ipip 0.0.0.0 brd 0.0.0.0
 4: eth0@if24: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1440 qdisc noqueue state UP 
     link/ether 3e:4d:b3:31:41:71 brd ff:ff:ff:ff:ff:ff
-    inet 111.xx.236.129 /32 scope global eth0
+    inet 172.xx.236.129 /32 scope global eth0
        valid_lft forever preferred_lft forever
 
 / # ip neigh
@@ -113,14 +113,14 @@ cali5a5991829b4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 ```
 # calicoctl get workloadEndpoint
 WORKLOAD                    NODE    NETWORKS            INTERFACE
-my-nginx-79c95d84d4-dljtn   k8s01   111.xx.73.65/32     cali5a5991829b4
-my-nginx-79c95d84d4-2jbcl   k8s02   111.xx.236.129/32   calif682b25fe10
+my-nginx-79c95d84d4-dljtn   k8s01   172.xx.73.65/32     cali5a5991829b4
+my-nginx-79c95d84d4-2jbcl   k8s02   172.xx.236.129/32   calif682b25fe10
 
 ```
 - 方法二：登录到容器所在的物理机支持路由表。然后结合kubectl get pod -o wide 查询容器ip，结合起来查询。
 ```
 # ip route
-111.xx.73.65 dev cali5a5991829b4 scope link
+172.xx.73.65 dev cali5a5991829b4 scope link
 ```
 
 # 总结
