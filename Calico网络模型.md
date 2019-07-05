@@ -35,30 +35,28 @@ https://docs.projectcalico.org/v3.7/networking/design/l3-interconnect-fabric
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-rack-l2-spine.png)
 
 该模式介绍：
-- 1：每个机架一个RR
-- 2：机架上的所有主机和机架RR构成Peer集群
-- 3：机架RR和其他机架RR构成Peer集群
-
-优点：
-- 1: 网络模型比较清晰和明了，网络路径短。
+- 1：每个主机和主机上的endpoints组成一个AS peer集群
+- 2：每个机架一个RR
+- 3：机架上的所有主机和机架RR构成Peer集群
+- 4：机架RR和其他机架RR构成Peer集群
 
 缺点：
-- 2：如果机架数量较多，则机架RR的之间连接数也会指数型增加，不适合较大规模组网
+- 1：如果机架数量较多，则机架RR的之间连接数也会指数型增加，机架数量受到限制
+- 2：TOR交换机路由压力会比较大
 
 ### 三层Peer
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-rack-l3-spine.png)
 
 模式介绍：
-- 1：每个机架一个RR
+- 1：每个主机和主机上的endpoints组成一个AS peer集群
+- 2：每个机架一个RR
 - 2：机架上的所有主机和机架RR构成Peer集群
-- 3：机架RR和核心交换机的RR组成Peer集群
+- 4：机架RR和核心交换机的RR组成Peer集群
 
 优点：
 - 1： 可以适合较大规模网络组网
 - 2:  可扩展性好
 
-缺点：
-- 1: 需要注意集群规模，防止超过路由表最大数量
 
 ## The AS per Compute Server model(每台主机一个AS自治域)
 calico官方不推荐的方案，缺点比较明显：
@@ -86,15 +84,16 @@ calico官方不推荐的方案，缺点比较明显：
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-downward-default.png)
 
 为什么采用这种模式呢，主要是以上模式存在一些问题：
-- 1： 每个node、每个TOR交换机、每个核心交换机都需要记录全网路由。这样会导致路由表数量激增
+- 1： 每个node、每个TOR交换机、每个核心交换机都需要记录全网路由。这样会导致路由表数量激增，有可能操作路由表支持的最大数量
 
 为了减少路由表的数量，可以考虑采用该模式，该模式的特点如下：
 - 1: 所有的node 使用相同的AS号，但是A1,A2可以是不同的网络平面
-- 2：所有的下级节点向上节点发布所有的路由信息，比如node-->TOR-->core交换机
+- 2：所有的下级节点向上节点发布所有的路由信息，比如node-->TOR-->core交换机发布路由信息
 - 3：上级节点向下级节点发布一个默认路由
+- 4： 这样node节点只有自身的路由信息，默认下一跳为TOR；TOR只有所在机架的路由信息，默认下一跳为core交换机；core交换机拥有所有的路由信息。
 
 优点：
 - 1：每个点仅有自己所属的路由信息，路由数量极大减少了
 
 缺点：
-- 1: 路径长，通信效率不如前面的高
+- 1: 路径长，路由效率不如前面的高。比如发送到无效IP的流量必须到达核心交换机以后，才能被确定为无效。
