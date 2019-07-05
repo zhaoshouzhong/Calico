@@ -101,4 +101,21 @@ cali5a5991829b4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 ```
 
 那么，如何查询容器和虚拟网卡的对应关系呢？
+- 方法一：可以通过calicoctl指令查询
+```
+# calicoctl get workloadEndpoint
+WORKLOAD                    NODE    NETWORKS            INTERFACE
+my-nginx-79c95d84d4-dljtn   k8s01   111.xx.73.65/32     cali5a5991829b4
+my-nginx-79c95d84d4-2jbcl   k8s02   111.xx.236.129/32   calif682b25fe10
 
+```
+- 方法二：登录到容器所在的物理机支持路由表。然后结合kubectl get pod -o wide 查询容器ip，结合起来查询。
+```
+# ip route
+111.xx.73.65 dev cali5a5991829b4 scope link
+```
+
+# 总结
+- 可以通过calicoctl指令查询容器和cali+ 虚拟网卡的对应关系
+- 可以通过查询物理机路由表，找到本机容器的路由信息，以及其他物理机容器ip段的路由关系
+- 物理机容器的ip段由calico在etcd中定义和分配的。
