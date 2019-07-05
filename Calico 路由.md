@@ -17,8 +17,9 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 
 备注：Use Iface部分，物理机的对应的为tunl0，这表明我们采用的是默认的node to node mesh 组网方式。
 如果我们改变一下策略，比如采用
- - name: CALICO_IPV4POOL_IPIP
-   value: "off"
+` - name: CALICO_IPV4POOL_IPIP `
+`   value: "off" `
+
 或者CrossSubnet，则route表变为类似内容：
 
 ```javascript
