@@ -59,3 +59,46 @@ k8s02 为111.xx.236.128/26
 
 备注：如果有异常操作，会导致etcd的allocations的字段记录的信息可能不准，但是unallocated记录的是准的。
 
+# 容器路由
+进入一个容器内部，比如
+```
+/ # ip route
+default via 169.254.1.1 dev eth0 
+169.254.1.1 dev eth0 scope link 
+
+/ # ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+4: eth0@if24: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1440 qdisc noqueue state UP 
+    link/ether 3e:4d:b3:31:41:71 brd ff:ff:ff:ff:ff:ff
+    inet 111.xx.236.129 /32 scope global eth0
+       valid_lft forever preferred_lft forever
+
+/ # ip neigh
+169.254.1.1 dev eth0 lladdr ee:ee:ee:ee:ee:ee ref 1 used 0/0/0 probes 1 REACHABLE
+
+```
+可以看出：
+- 本地路由统一指向 169.254.1.1。所有的容器都是这样的
+- apr 地址统一为ee:ee:ee:ee:ee:ee
+为啥是这样，参考：
+
+https://docs.projectcalico.org/v3.5/usage/troubleshooting/faq#why-do-all-cali-interfaces-have-the-mac-address-eeeeeeeeeeee
+
+我们看一下物理机的ifconfig：接口mac地址统一为 ee:ee:ee:ee:ee:ee
+```
+# ifconfig
+cali5a5991829b4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        ether ee:ee:ee:ee:ee:ee  txqueuelen 0  (Ethernet)
+        RX packets 543  bytes 82503 (80.5 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 548  bytes 47602 (46.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+那么，如何查询容器和虚拟网卡的对应关系呢？
+
