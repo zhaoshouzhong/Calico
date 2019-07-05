@@ -35,10 +35,8 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 # calico IP分配规则
 从上面可以看出，针对不同的物理机，calico分别不同的ip路由规则。这些物理机和ip网段的对应规则怎么可以查到呢？答案在etcd中。
 查询etcd
-etcdctl xx  get /  --prefix --keys-only |grep calico
-xx为etcd key和秘钥相关信息
-查询信息类似于：
 ```
+etcdctl get /  --prefix --keys-only |grep calico
 /calico/ipam/v2/assignment/ipv4/block/111.xx.236.128-26
 /calico/ipam/v2/assignment/ipv4/block/111.xx.73.64-26
 
@@ -55,7 +53,9 @@ k8s02 为111.xx.236.128/26
 /calico/ipam/v2/assignment/ipv4/block/111.10.236.128-26
 {"cidr":"111.xx.236.128/26","affinity":"host:k8s02","strictAffinity":false,"allocations":[null,null,null,null,null,null,null,null,0,1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"unallocated":[10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,1,0,2,3,4,5,6,7],"attributes":[{"handle_id":"k8s-pod-network.e908404f358d0e88231393cf2e19b0328f05ccc162743e18a87e0192beef0e0d","secondary":null},{"handle_id":"k8s-pod-network.c4367bf4e8732d6dc33ed192f9ee9ce07f9e6731a98e1fca58cd2d1c1b887c5c","secondary":null}]}
 ```
-allocations:表示已经分配的
-unallocated：表示未分配的
-calico分配规则是一次分配一个64个ip的网段，如果不够，calico会持续分配。这样一个物理机就可以查到多个网络的分配情况。
+- allocations:表示已经分配的
+- unallocated：表示未分配的
+- calico分配规则是一次分配一个64个ip的网段，如果不够，calico会持续分配。这样一个物理机就可以查到多个网络的分配情况。
+
 备注：如果有异常操作，会导致etcd的allocations的字段记录的信息可能不准，但是unallocated记录的是准的。
+
