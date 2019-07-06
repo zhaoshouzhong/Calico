@@ -1,5 +1,4 @@
 Calico 会生成大量的iptable，用来进行网络策略的控制。iptables是个坑，大量的iptable导致故障定位和排查复杂度大大增加。
-因此，iptables也必须掌握。
 掌握calico的iptables生成规则，必须具备iptables的基础知识和技能。下面这个图特别提一下，因为我们分析calico iptables生成规则时，需要重点参考这个图：
 # iptables 链和表
 
@@ -8,7 +7,7 @@ Calico 会生成大量的iptable，用来进行网络策略的控制。iptables�
 # PREROUTING 链：
 该链为入口链，有三张表，raw表，mangle表，nat表。
 calico也在这三张表中生成一系列规则。
-输入，iptables-save，我们可以完整的iptables。 
+输入，iptables-save，我们可以得到完整的iptables。 
 ## PREROUTING@raw 规则
 ```
 *raw
@@ -52,7 +51,7 @@ cali-PREROUTING:
 -A cali-PREROUTING -m comment --comment "cali:iqLD7MJ2v-mVyDd4" -m comment --comment "Host endpoint policy accepted packet." -m mark --mark 0x10000/0x10000 -j ACCEPT
 ```
  cali-PREROUTING :
-- 第一条规则：运行连接状态为 RELATED,ESTABLISHED 的通过
+- 第一条规则：允许连接状态为 RELATED,ESTABLISHED 的通过
 - 第二条规则：允许 mark为 0x10000/0x10000 的通过
 - 第三条规则：所有从cali+的流量允许通过
 - 第四条规则：跳转到 cali-from-host-endpoint。目前cali-from-host-endpoint 规则为空
@@ -90,6 +89,6 @@ cali-PREROUTING:
 规则：
 - 第一条：跳转到 cali-PREROUTING，而 cali-PREROUTING 跳转到 cali-fip-dnat，目前cali-fip-dnat 为空
 - 第二条：跳转到 KUBE-SERVICES，这个是K8s生成的规则
-- 第三条： 跳转到 DOCKER ，这个是Docker生成的规则
+- 第三条：跳转到 DOCKER ，这个是Docker生成的规则
 
 参考iptables的链和表关系，逐步梳理出其他的iptables信息。不再详述。
