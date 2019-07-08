@@ -9,11 +9,10 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 172.xx.75.11    0.0.0.0         255.255.255.255 UH    0      0        0 cali79e3e1514e7
 172.xx.238.192  host19          255.255.255.192 UG    0      0        0 tunl0
 ```
-对应calixx的ip就是docker的ip地址
-对应host19 的为物理机host19 对应的 calico网段起始ip。
+
 登录每台物理机，都可以看到类似的路由表。可以看出calico的路由生成规则：
-- 1：生成本机的docker ip到路由表中
-- 2：生成其他物理机的路由信息，则通过该路由规则可以访问到其他物理机的docker
+- 1：生成本机的docker ip到路由表中。172.xx.75.5，172.xx.75.11，为docker容器的ip地址。
+- 2：生成其他物理机的路由信息，则通过该路由规则可以访问到其他物理机的docker。172.xx.238.192  host19为物理机host19的calico网段起始ip。
 
 备注：Use Iface部分，物理机的对应的为tunl0，这表明我们采用的是默认的node to node mesh 组网方式。
 如果我们改变一下策略，比如采用
