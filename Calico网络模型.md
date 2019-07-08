@@ -1,6 +1,6 @@
 # 概述
 calico 针对不同的应用场景，有不同的网络模型，可以分为两大类：
-- 1：二层网络模型：适合于二层组网和互通的情况，endpoints通过二层交换机互通，不需要通过额外路由。
+- 1：二层网络模型：适合于二层组网和互通的情况，属于同一子网。
 - 2：三层网络模型：如果需要跨越多个子网，则需要三层交换机进行路由交换，实现跨子网通信。
 下面分别介绍这两种网络模型：
 
@@ -30,7 +30,7 @@ https://docs.projectcalico.org/v3.7/networking/design/l3-interconnect-fabric
 
 三层网络模型，有多种方案可供选择
 ## The AS Per Rack model（每个机架一个自治域）
-这个是calico官方推荐的组网方案，
+这个是calico官方推荐的组网方案，分为两种类型：二层Peer;三层Peer。
 ### 二层Peer
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-rack-l2-spine.png)
 
@@ -54,8 +54,8 @@ https://docs.projectcalico.org/v3.7/networking/design/l3-interconnect-fabric
 - 4：机架RR和核心交换机的RR组成Peer集群
 
 优点：
-- 1： 可以适合较大规模网络组网
-- 2:  可扩展性好
+- 1：可以适合较大规模网络组网
+- 2: 可扩展性好
 
 
 ## The AS per Compute Server model(每台主机一个AS自治域)
@@ -63,7 +63,7 @@ calico官方不推荐的方案，缺点比较明显：
 - 1： 占用大量AS号
 - 2： 维护和配置较为复杂
 
-虽然不推荐，还是要介绍一下：
+虽然不推荐，但是Calico官方还是花费了一些篇章进行介绍，也是分为两种：二层Peer，三层Peer
 ### 二层Peer
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-diagrams-as-server-l2-spine.png)
 
@@ -84,13 +84,13 @@ calico官方不推荐的方案，缺点比较明显：
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/l3-fabric-downward-default.png)
 
 为什么采用这种模式呢，主要是以上模式存在一些问题：
-- 1： 每个node、每个TOR交换机、每个核心交换机都需要记录全网路由。这样会导致路由表数量激增，有可能操作路由表支持的最大数量
+- 1： 每个node、每个TOR交换机、每个核心交换机都需要记录全网路由。这样会导致路由表数量激增，有可能导致主机/TOR的路由表超过自身支持的最大数量
 
 为了减少路由表的数量，可以考虑采用该模式，该模式的特点如下：
 - 1: 所有的node 使用相同的AS号，但是A1,A2可以是不同的网络平面
-- 2：所有的下级节点向上节点发布所有的路由信息，比如node-->TOR-->core交换机发布路由信息
+- 2：所有的下级节点向上节点发布所有的路由信息，比如node-->TOR-->core交换机 各自发布本级的路由信息
 - 3：上级节点向下级节点发布一个默认路由
-- 4： 这样node节点只有自身的路由信息，默认下一跳为TOR；TOR只有所在机架的路由信息，默认下一跳为core交换机；core交换机拥有所有的路由信息。
+- 4：这样node节点只有自身的路由信息，默认下一跳为TOR；TOR只有所在机架的路由信息，默认下一跳为core交换机；core交换机拥有所有的路由信息。
 
 优点：
 - 1：每个点仅有自己所属的路由信息，路由数量极大减少了
