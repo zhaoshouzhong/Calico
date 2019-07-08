@@ -1,5 +1,5 @@
 # Calico介绍
-calico 是一个开源的网络/网络安全解决方案，用在容器，虚拟机，物理机上。calico支持Kubernetes, OpenShift, Docker EE, OpenStack,  bare metal 等。
+calico 是一个开源的网络/网络安全解决方案，用在容器，虚拟机，物理机上。calico支持Kubernetes, OpenShift, Docker, OpenStack,  bare metal 等。
 ## Calico的优势：
 - 1：提供了丰富的网络策略模型，实现了细粒度的网络安全控制。
 - 2：高性能：基于bgp分发和交换路由信息，基于linux 内核的route和iptables机制进行网络通信。没有额外的封包和拆包动作，通信效率高。
