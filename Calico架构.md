@@ -7,19 +7,18 @@ calico agent，运行在每台主机上。它的主要功能包括:
 - （2）路由编程：把路由信息写入到FIB（Forwarding Information Base）表中
 - （3）ACL编程：ACL权限写入到kernel中
 - （4）状态报告：提供网络监控的相关数据
-### The Orchestrator plugin：
-编排插件，和具体的编排服务（openstack，k8s）相关。
 ### etcd：
-calico数据存储在etcd中
+calico可以外挂ectd存储，把数据存储在etcd中
 ### BIRD：
 BGP client读取路由信息，并把它分发给数据中心其他节点。一般和Felix部署在一起
 ### Confd: 
 从etcd中读取数据，生成bird配置文件。
 ### BGP Route Reflector (BIRD)：
-小规模网络下，BGP client是相互连接，组成一个网状网络。这种方式不适合于大规模的组网场景。而RR则用在大规模的网络模式下，这样BGP client直接和RR进行互联，极大减少网络连接的数量。RR接受到BGP client端路由新后，
-会自动把路由信息广播到数据中心其他路由节点。
-### calicoctl: calcio的命令行工具，用来配置和查询calico信息。可以部署在一台或者多台主机上。
-
+小规模网络下，BGP client是相互连接node to node mesh，组成一个网状网络。这种方式不适合于大规模的组网场景。而RR则用在大规模的网络模式下，这样BGP client直接和RR进行互联，极大减少网络连接的数量。RR接收到BGP client端路由新后，会自动把路由信息广播到数据中心其他路由节点。
+### calicoctl: 
+calcio的命令行工具，用来配置和查询calico信息。可以部署在一台或者多台主机上。
+### The Orchestrator plugin：
+这个编排插件没有体现在上面的结构图中，它和具体的编排服务（openstack，k8s）相关。编排插件实现api转换（比如把k8s的网络模型转换为calico的网络模型），calico节点的状态反馈（比如把bird存活状态反馈给k8s）
 # calico部署
 calico的部署，参考官方文档，支持k8s,openshift,openstack,物理机方式部署。我们选择k8s的部署方式
 部署要求，参考：
