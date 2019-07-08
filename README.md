@@ -15,16 +15,3 @@ calico 是一个开源的网络/网络安全解决方案，用在容器，虚拟
 - 3：calico路由：了解calico的route生成规则
 - 4：calico iptables：了解calico 生成iptables的规则
 
-参考资料：
-
-https://docs.projectcalico.org/v3.7/reference/architecture/
-
-https://docs.projectcalico.org/v3.7/networking/design/l3-interconnect-fabric
-
-https://docs.projectcalico.org/v3.7/networking/design/l2-interconnect-fabric
-
-https://www.lijiaocn.com/%E9%A1%B9%E7%9B%AE/2017/04/11/calico-usage.html
-
-https://www.jianshu.com/p/f0177b84de66
-
-https://feisky.gitbooks.io/sdn/container/calico/
