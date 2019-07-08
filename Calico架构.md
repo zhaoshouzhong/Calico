@@ -10,7 +10,7 @@ calico agent，运行在每台主机上。它的主要功能包括:
 ### etcd：
 calico可以外挂ectd存储，把数据存储在etcd中
 ### BIRD：
-BGP client读取路由信息，并把它分发给数据中心其他节点。一般和Felix部署在一起
+BIRD是一个BGP client，它从FIB中读取路由信息，并把它分发给数据中心其他节点。一般和Felix部署在一起
 ### Confd: 
 从etcd中读取数据，生成bird配置文件。
 ### BGP Route Reflector (BIRD)：
@@ -44,11 +44,12 @@ calico-node-qfkxq                          2/2     Running   4          5d4h
 # calico部署架构
 calico从部署架构来讲，主要是包括两个节点：calico controller节点，calico node节点。
 ## calico controller
-集成了Orchestrator Plugin插件，实现了api和数据的转换处理。包含的能力：
-- 1：policy controller: watches network policies and programs Calico policies.
-- 2：profile controller: watches namespaces and programs Calico profiles.
-- 3：workloadendpoint controller: watches for changes to pod labels and updates Calico workload endpoints.
-- 4：node controller: watches for the removal of Kubernetes nodes and removes corresponding data from Calico.
+controller包含如下几个能力：
+- policy controller: watches network policies and programs Calico policies.
+- namespace controller: watches namespaces and programs Calico profiles.
+- serviceaccount controller: watches service accounts and programs Calico profiles.
+- workloadendpoint controller: watches for changes to pod labels and updates Calico workload endpoints.
+- node controller: watches for the removal of Kubernetes nodes and removes corresponding data from Calico.
 ## calico node
 每个主机上部署一个,DaemonSet类型.集成了felix，bird，confd，cni，ipam的能力。
 下面，我们找一个pod，深入观察一下calico node的内部信息
@@ -132,5 +133,5 @@ total 66648
 
 # 数据路径
 
-calico通过BGP协议交换路由信息，路由信息拿到后，再把相关信息写入os kernel的路由表和iptables，没有额外的动作。因此，calico的效率高很显然了。
+calico通过BGP协议交换路由信息，路由信息拿到后，再把相关信息写入os kernel的路由表和iptables，没有额外的动作。
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/datapath.JPG)
