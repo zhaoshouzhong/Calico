@@ -30,7 +30,7 @@ cali-PREROUTING:
 - 第一条：设置标记0x0/0xf0000
 - 第二条：对所有从 cali+ 的网卡，设置标记 0x40000/0x40000
 - 第三条：对其他非 cali+ 流量（匹配0x0/0x40000）的，调整到 cali-from-host-endpoint 规则处理。cali-from-host-endpoint目前内容为空
-- 第四条：运行标记为  0x10000/0x10000的消息通过
+- 第四条：允许标记为  0x10000/0x10000的消息通过
 
 ## PREROUTING@mangle 规则
 ```
@@ -91,4 +91,4 @@ cali-PREROUTING:
 - 第二条：跳转到 KUBE-SERVICES，这个是K8s生成的规则
 - 第三条：跳转到 DOCKER ，这个是Docker生成的规则
 
-参考iptables的链和表关系，逐步梳理出其他的iptables信息。不再详述。
+参考iptables的链和表关系，可以逐步梳理出其他的iptables信息。不再详述。
