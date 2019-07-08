@@ -21,6 +21,7 @@ calcio的命令行工具，用来配置和查询calico信息。可以部署在�
 这个编排插件没有体现在上面的结构图中，它和具体的编排服务（openstack，k8s）相关。编排插件实现api转换（比如把k8s的网络模型转换为calico的网络模型），calico节点的状态反馈（比如把bird存活状态反馈给k8s）
 # calico部署
 calico的部署，参考官方文档，支持k8s,openshift,openstack,物理机方式部署。我们选择k8s的部署方式
+
 部署要求，参考：
 
 https://docs.projectcalico.org/v3.7/getting-started/kubernetes/requirements
