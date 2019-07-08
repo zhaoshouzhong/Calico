@@ -122,7 +122,7 @@ my-nginx-79c95d84d4-2jbcl   k8s02   172.xx.236.129/32   calif682b25fe10
 172.xx.73.65 dev cali5a5991829b4 scope link
 ```
 
-# 总结
+# 路由总结
 - 可以通过calicoctl指令查询容器和cali+ 虚拟网卡的对应关系
 - 可以通过查询物理机路由表，找到本机容器的路由信息，以及其他物理机容器ip段的路由关系
 - 物理机容器的ip段由calico在etcd中定义和分配的。
