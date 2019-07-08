@@ -1,31 +1,40 @@
 # calico架构
 ![image](https://github.com/zhaoshouzhong/Calico/raw/master/images/calico.jpg)
 
-- Felix：calico agent，运行在每台主机上。它的主要功能包括:
-（1）接口管理：把接口相关的信息编程到内核中，方便内核处理endpoint发送的消息。
-（2）路由编程：把路由信息写入到FIB（Forwarding Information Base）表中
-（3）ACL编程：ACL权限写入到kernel中
-（4）状态报告：提供网络监控的相关数据
-- The Orchestrator plugin：编排插件，和具体的编排服务（openstack，k8s）相关。
-- etcd：calico数据存储在etcd中
-- BIRD：BGP client读取路由信息，并把它分发给数据中心其他节点。一般和Felix部署在一起
-- Confd: 从etcd中读取数据，生成bird配置文件。
-- BGP Route Reflector (BIRD)：小规模网络下，BGP client是相互连接，组成一个网状网络。这种方式不适合于大规模的组网场景。而RR则用在大规模的网络模式下，这样BGP client直接和RR进行互联，极大减少网络连接的数量。RR接受到BGP client端路由新后，
+### Felix：
+calico agent，运行在每台主机上。它的主要功能包括:
+- （1）接口管理：把接口相关的信息编程到内核中，方便内核处理endpoint发送的消息。
+- （2）路由编程：把路由信息写入到FIB（Forwarding Information Base）表中
+- （3）ACL编程：ACL权限写入到kernel中
+- （4）状态报告：提供网络监控的相关数据
+### The Orchestrator plugin：
+编排插件，和具体的编排服务（openstack，k8s）相关。
+### etcd：
+calico数据存储在etcd中
+### BIRD：
+BGP client读取路由信息，并把它分发给数据中心其他节点。一般和Felix部署在一起
+### Confd: 
+从etcd中读取数据，生成bird配置文件。
+### BGP Route Reflector (BIRD)：
+小规模网络下，BGP client是相互连接，组成一个网状网络。这种方式不适合于大规模的组网场景。而RR则用在大规模的网络模式下，这样BGP client直接和RR进行互联，极大减少网络连接的数量。RR接受到BGP client端路由新后，
 会自动把路由信息广播到数据中心其他路由节点。
-- calicoctl: calcio的命令行工具，用来配置和查询calico信息。可以部署在一台或者多台主机上。
+### calicoctl: calcio的命令行工具，用来配置和查询calico信息。可以部署在一台或者多台主机上。
 
 # calico部署
 calico的部署，参考官方文档，支持k8s,openshift,openstack,物理机方式部署。我们选择k8s的部署方式
-部署要求，参考：[calico部署要求](https://docs.projectcalico.org/v3.7/getting-started/kubernetes/requirements)
+部署要求，参考：
+
+https://docs.projectcalico.org/v3.7/getting-started/kubernetes/requirements
 
 部署方式，采用etcd外置方式
-[etcd部署方式](https://docs.projectcalico.org/v3.7/getting-started/kubernetes/installation/calico#installing-with-the-etcd-datastore)
+
+https://docs.projectcalico.org/v3.7/getting-started/kubernetes/installation/calico#installing-with-the-etcd-datastore)
 
 基于etcd方式部署，有如下节点需要注意：
 - 1：注意更改POD_CIDR范围，需要和k8s的POD范围保持一致
 - 2：注意etcd信息的配置，把etcd的配置信息替换为实际的证书信息
 - 3：如果有多网卡的需要指定calico使用的网卡信息，否则会报错
-部署完成后，可以看到类似如下信息：主要是一个calico controller节点，多个calico node节点。
+部署完成后，可以看到类似如下信息：
 ```
 # kubectl get pod -n kube-system
 NAME                                       READY   STATUS    RESTARTS   AGE
@@ -35,12 +44,14 @@ calico-node-qfkxq                          2/2     Running   4          5d4h
 ```
 # calico部署架构
 calico从部署架构来讲，主要是包括两个节点：calico controller节点，calico node节点。
-## calico controller：集成了Orchestrator Plugin插件，实现了api和数据的转换处理。包含的能力：
+## calico controller
+集成了Orchestrator Plugin插件，实现了api和数据的转换处理。包含的能力：
 - 1：policy controller: watches network policies and programs Calico policies.
 - 2：profile controller: watches namespaces and programs Calico profiles.
 - 3：workloadendpoint controller: watches for changes to pod labels and updates Calico workload endpoints.
 - 4：node controller: watches for the removal of Kubernetes nodes and removes corresponding data from Calico.
-## calico node：每个主机上部署一个,DaemonSet类型.集成了felix，bird，confd，cni，ipam的能力。
+## calico node
+每个主机上部署一个,DaemonSet类型.集成了felix，bird，confd，cni，ipam的能力。
 下面，我们找一个pod，深入观察一下calico node的内部信息
 我们 docker inspect calico node的image，可以看到image的启动脚本为：start_runit
 ```
