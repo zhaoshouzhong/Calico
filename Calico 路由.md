@@ -54,7 +54,7 @@ k8s02为172.xx.236.128/26。
 
 在看一下assignment的信息
 ```
- calico get /calico/ipam/v2/assignment/ipv4/block/172.xx.236.128-26
+ etcdctl get /calico/ipam/v2/assignment/ipv4/block/172.xx.236.128-26
 /calico/ipam/v2/assignment/ipv4/block/172.10.236.128-26
 {"cidr":"172.xx.236.128/26","affinity":"host:k8s02","strictAffinity":false,"allocations":[null,null,null,null,null,null,null,null,0,1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"unallocated":[10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,1,0,2,3,4,5,6,7],"attributes":[{"handle_id":"k8s-pod-network.e908404f358d0e88231393cf2e19b0328f05ccc162743e18a87e0192beef0e0d","secondary":null},{"handle_id":"k8s-pod-network.c4367bf4e8732d6dc33ed192f9ee9ce07f9e6731a98e1fca58cd2d1c1b887c5c","secondary":null}]}
 ```
@@ -116,7 +116,7 @@ my-nginx-79c95d84d4-dljtn   k8s01   172.xx.73.65/32     cali5a5991829b4
 my-nginx-79c95d84d4-2jbcl   k8s02   172.xx.236.129/32   calif682b25fe10
 
 ```
-- 方法二：登录到容器所在的物理机支持路由表。然后结合kubectl get pod -o wide 查询容器ip，结合起来查询。
+- 方法二：登录到容器所在的物理机查询路由表。然后kubectl get pod -o wide 查询容器ip，结合起来查询。
 ```
 # ip route
 172.xx.73.65 dev cali5a5991829b4 scope link
