@@ -2,7 +2,8 @@
 calico 针对不同的应用场景，有不同的网络模型，可以分为两大类：
 - 1：二层网络模型：适合于二层组网和互通的情况，属于同一子网。
 - 2：三层网络模型：如果需要跨越多个子网，则需要三层交换机进行路由交换，实现跨子网通信。
-下面分别介绍这两种网络模型：
+另外，还有一种模型，即calico的默认网络模型：node-to-node mesh模型。
+下面分别介绍这三种网络模型：
 
 # 二层网络模型：
 https://docs.projectcalico.org/v3.7/networking/design/l2-interconnect-fabric
@@ -97,3 +98,40 @@ calico官方不推荐的方案，缺点比较明显：
 
 缺点：
 - 1: 路径长，路由效率不如前面的高。比如发送到无效IP的流量必须到达核心交换机以后，才能被确定为无效。
+# node-to-node mesh模型
+这个是calico默认的网络模型，适合于小于50个节点的场景。calico官方讲做过100个节点的node to node mesh模式。
+The full node-to-node mesh option provides a mechanism to automatically configure peering between all Calico nodes. When enabled, each Calico node automatically sets up a BGP peering with every other Calico node in the network. By default this is enabled.
+
+The full node-to-node mesh provides a simple mechanism for auto-configuring the BGP network in small scale deployments (say 50 nodes—although this limit is not set in stone and Calico has been deployed with over 100 nodes in a full mesh topology).
+在该模式下，查看node status，可以看到类似如下信息：
+```
+[root@calico ~]# calicoctl node status
+Calico process is running.
+
+IPv4 BGP status
++----------------+-------------------+-------+----------+-------------+
+|  PEER ADDRESS  |     PEER TYPE     | STATE |  SINCE   |    INFO     |
++----------------+-------------------+-------+----------+-------------+
+| 192.168.56.101 | node-to-node mesh | up    | 23:53:02 | Established |
+| 192.168.56.102 | node-to-node mesh | up    | 23:53:02 | Established |
++----------------+-------------------+-------+----------+-------------+
+
+IPv6 BGP status
+No IPv6 peers found.
+
+```
+关闭node to node mesh模块，查看node status状态，可以看到类似如下信息：
+```
+[root@k8s01 calico3.7]# calicoctl node status
+Calico process is running.
+
+IPv4 BGP status
++---------------+-----------+-------+----------+-------------+
+| PEER ADDRESS  | PEER TYPE | STATE |  SINCE   |    INFO     |
++---------------+-----------+-------+----------+-------------+
+| 192.168.56.40 | global    | up    | 10:33:38 | Established |
++---------------+-----------+-------+----------+-------------+
+
+IPv6 BGP status
+No IPv6 peers found.
+```
