@@ -184,7 +184,7 @@ spec:
 calicoctl apply -f  node-calico-rr-label.yaml
 ```
 
-### 定义node 执行特定标签RR
+### 定义node指向特定标签RR
 ```
 [root@k8s01 calico3.7]# cat  BGPPeer-label.yaml
 apiVersion: projectcalico.org/v3
