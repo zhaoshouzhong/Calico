@@ -34,6 +34,7 @@ https://docs.projectcalico.org/v3.7/getting-started/kubernetes/installation/cali
 - 1：注意更改POD_CIDR范围，需要和k8s的POD范围保持一致
 - 2：注意etcd信息的配置，把etcd的配置信息替换为实际的证书信息
 - 3：如果有多网卡的需要指定calico使用的网卡信息，否则会报错
+
 部署完成后，可以看到类似如下信息：
 ```
 # kubectl get pod -n kube-system
@@ -126,7 +127,7 @@ protocol bgp Global_192_168_56_40 from bgp_template {
 
 ```
 备注：
-- Node-to-node mesh：如果开启了模式，这会生成对应的记录。这个calico默认的方式。会针对除了本机外的其他主机，生成一条记录
+- Node-to-node mesh：如果开启了该模式，这会生成对应的记录。这个calico默认的方式。会针对除了本机外的其他主机，生成一条记录
 - Global peers：这里的例子中，设置了全局的bgp peer，这样所有的node节点直接和该peer交换信息。
 - Node-specific peers：指针对单个node设置peer信息
 
