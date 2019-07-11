@@ -1,5 +1,6 @@
 在规模比较大时，不能采用node-to-node mesh模型，必须引入RR。RR可以配置在交换机上，也可以以软件方式部署。
 calico提供RR的软件部署能力。
+# 部署单节点RR
 ### 前置条件：
 - 找一个主机，部署了docker。
 - etcd 已经部署好
@@ -154,3 +155,78 @@ default         gateway         0.0.0.0         UG    102    0        0 enp0s3
 可以看到已经正确生成对其他主机的路由信息。
 然后再ping一下pod ip，检查看看是否可以ping通。
 如果没有问题，则表示RR配置成功。
+
+# 部署多节点RR
+### 设定node label
+前面的例子，仅指定一个RR，这样它的高可用性就不够了。需要指定多个RR。
+指定多个RR时，需要用到BGPPeer对象的label属性了：
+参考：
+
+https://docs.projectcalico.org/v3.7/reference/calicoctl/resources/bgppeer
+
+需要用到nodeSelector，peerSelector
+```
+[root@k8s01 calico3.7]# cat node-calico-rr-label.yaml
+apiVersion: projectcalico.org/v3
+kind: Node
+metadata:
+  name: calico-rr
+  labels:
+    i-am-a-route-reflector: true
+spec:
+  bgp:
+    asNumber: 64512
+    ipv4Address: 192.168.56.40/32
+    routeReflectorClusterID: 192.168.56.40
+```
+
+```
+calicoctl apply -f  node-calico-rr-label.yaml
+```
+
+### 定义node 执行特定标签RR
+```
+[root@k8s01 calico3.7]# cat  BGPPeer-label.yaml
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: bgppeer-global-40
+spec:
+  nodeSelector: "!has(i-am-a-route-reflector)"
+  peerSelector: has(i-am-a-route-reflector)
+```
+```
+calicoctl apply -f BGPPeer-label.yaml
+```
+### 检查node status
+```
+
+[root@k8s01 calico3.7]# calicoctl node status
+Calico process is running.
+
+IPv4 BGP status
++---------------+---------------+-------+----------+-------------+
+| PEER ADDRESS  |   PEER TYPE   | STATE |  SINCE   |    INFO     |
++---------------+---------------+-------+----------+-------------+
+| 192.168.56.40 | node specific | up    | 13:46:40 | Established |
++---------------+---------------+-------+----------+-------------+
+
+IPv6 BGP status
+No IPv6 peers found.
+```
+再检查一下route，ping 一个ip是否可以ping通。
+
+### 设置RR自身为Peer集群
+```
+[root@k8s01 calico3.7]# cat  BGPPeer-RR-label.yaml
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: bgppeer-rr-mesh
+spec:
+  nodeSelector: has(i-am-a-route-reflector)
+  peerSelector: has(i-am-a-route-reflector)
+```
+```
+calicoctl apply -f BGPPeer-RR-label.yaml
+```
