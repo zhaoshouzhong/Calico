@@ -1,15 +1,16 @@
 在规模比较大时，不能采用node-to-node mesh模型，必须引入RR。RR可以配置在交换机上，也可以以软件方式部署。
-calico提供RR的能力。
+calico提供RR的软件部署能力。
 # 部署RR
 ### 前置条件：
 - 找一个主机，部署了docker。
 - etcd 已经部署好
 
 ### 部署calicoctl
+```
 curl -O -L  https://github.com/projectcalico/calicoctl/releases/download/v3.7.4/calicoctl
 chmod 755 calicoctl 
 cp calicoctl /usr/bin
-
+```
 ### 定义calicoctl的配置文件
 定义calicoctl的配置文件，同时需要把etcd相关证书也复制到对应的目录下：
 ```
@@ -25,8 +26,9 @@ spec:
   etcdCACertFile: "/etc/kubernetes/cert/ca.pem"
 ```
 ### 启动一个calico node
+```
 calicoctl node run --name=calico-rr --node-image=calico/node:v3.7.3 --as=64512 --ip=192.168.56.40
-
+```
 运行后，可以看到类似如下信息：
 ```
 [root@calico calico]# calicoctl node run --name=calico-rr --node-image=calico/node:v3.7.3 --as=64512 --ip=192.168.56.40
@@ -71,7 +73,9 @@ calico-rr
 
 ```
 ### 设置calico-rr为RR
+```
 calicoctl get node calico-rr -o yaml
+```
 获取节点的yaml文件，然后复制下来。最终调整后的信息类似如下：
 ```
 [root@k8s01 calico3.7]# cat node-calico-rr.yaml
@@ -86,9 +90,9 @@ spec:
     routeReflectorClusterID: 192.168.56.40
 
 ```
-
+```
 calicoctl apply -f node-calico-rr.yaml
-
+```
 ### 关闭node-to-node mesh模型
 ```
 [root@k8s01 calico3.7]# cat BGPConfiguration.yaml
@@ -101,9 +105,9 @@ spec:
   nodeToNodeMeshEnabled: false
   asNumber: 64512
   ```
-  
- calicoctl apply -f BGPConfiguration.yaml
-
+``` 
+calicoctl apply -f BGPConfiguration.yaml
+```
 ### 设置全局bgp peer
 ```
 [root@k8s01 calico3.7]# cat  BGPPeer.yaml
@@ -116,9 +120,9 @@ spec:
   asNumber: 64512
 
 ```
-
+```
 calicoctl apply -f BGPPeer.yaml
-
+```
 ### 查看RR设置结果
 查看node 状态：
 ```
@@ -147,6 +151,7 @@ default         gateway         0.0.0.0         UG    102    0        0 enp0s3
 10.100.236.128  k8s02           255.255.255.192 UG    0      0        0 enp0s8
 
 ```
+
 可以看到已经正确生成对其他主机的路由信息。
 然后再ping一下pod ip，检查看看是否可以ping通。
 如果没有问题，则表示RR配置成功。
