@@ -107,7 +107,29 @@ PID   USER     TIME   COMMAND
 ```
 /etc/calico/confd/config # ls
 bird.cfg        bird6.cfg       bird6_aggr.cfg  bird6_ipam.cfg  bird_aggr.cfg   bird_ipam.cfg
+/etc/calico/confd/config# cat bird.cfg
+可以看到类似内容：
+# ------------- Node-to-node mesh -------------
+
+# Node-to-node mesh disabled
+
+# ------------- Global peers -------------
+
+# For peer /global/peer_v4/192.168.56.40
+protocol bgp Global_192_168_56_40 from bgp_template {
+  neighbor 192.168.56.40 as 64512;
+}
+
+# ------------- Node-specific peers -------------
+
+# No node-specific peers configured.
+
 ```
+备注：
+- Node-to-node mesh：如果开启了模式，这会生成对应的记录。这个calico默认的方式。会针对除了本机外的其他主机，生成一条记录
+- Global peers：这里的例子中，设置了全局的bgp peer，这样所有的node节点直接和该peer交换信息。
+- Node-specific peers：指针对单个node设置peer信息
+
 cni部分：根据calico.yaml安装文件，在每个物理机的/etc/cni/net.d目录下，可以看到cni的配置信息
 ```
 [root@k8s01 net.d]# pwd
